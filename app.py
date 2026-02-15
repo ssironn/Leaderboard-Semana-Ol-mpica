@@ -1,5 +1,5 @@
 import streamlit as st
-from database import engine, SessionLocal, Base
+from database import engine, get_db, Base
 from models import User
 from auth import hash_password
 
@@ -7,7 +7,7 @@ from auth import hash_password
 Base.metadata.create_all(bind=engine)
 
 # Create default admin if not exists
-db = SessionLocal()
+db = get_db()
 try:
     admin = db.query(User).filter_by(username="admin").first()
     if not admin:
@@ -22,7 +22,6 @@ finally:
     db.close()
 
 st.set_page_config(page_title="Batalha Olimpica", page_icon="🏅", layout="wide", initial_sidebar_state="collapsed")
-st.markdown("<style>[data-testid='stSidebarNav'] {display: none;}</style>", unsafe_allow_html=True)
 
 st.title("Batalha Olimpica")
 st.markdown("""

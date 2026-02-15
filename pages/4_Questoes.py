@@ -1,12 +1,11 @@
 import time
 import streamlit as st
-from database import SessionLocal
+from database import get_db
 from models import Regata, Questao
 
 st.set_page_config(page_title="Questoes - Batalha Olimpica", page_icon="📝", layout="wide", initial_sidebar_state="collapsed")
-st.markdown("<style>[data-testid='stSidebarNav'] {display: none;}</style>", unsafe_allow_html=True)
 
-db = SessionLocal()
+db = get_db()
 
 regata = db.query(Regata).filter_by(ativa=True).first()
 
@@ -31,10 +30,8 @@ else:
 
     questoes_sorted = sorted(questoes, key=lambda q: niveis_ordem.get(q.nivel, 99))
 
-    cols = st.columns(len(questoes_sorted))
-    for i, q in enumerate(questoes_sorted):
-        with cols[i]:
-            st.markdown(f"### {niveis_cor.get(q.nivel, '')} {niveis_label.get(q.nivel, q.nivel)}")
-            st.image(q.imagem, use_container_width=True)
+    for q in questoes_sorted:
+        st.markdown(f"### {niveis_cor.get(q.nivel, '')} {niveis_label.get(q.nivel, q.nivel)}")
+        st.image(q.imagem, use_container_width=True)
 
 db.close()
