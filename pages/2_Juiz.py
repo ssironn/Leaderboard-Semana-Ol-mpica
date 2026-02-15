@@ -16,9 +16,23 @@ if not user:
     st.error("Acesso restrito a juizes.")
     st.stop()
 
-st.title(f"Painel do Juiz — {user['username']}")
+# --- HEADER ---
+st.markdown(
+    """
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;600;700&display=swap');
+    .juiz-header { font-family:'Bebas Neue',sans-serif; font-size:2.2rem; letter-spacing:2px;
+                   background:linear-gradient(135deg,#f7971e,#ffd200); -webkit-background-clip:text;
+                   -webkit-text-fill-color:transparent; }
+    .juiz-user { font-family:'Outfit',sans-serif; color:#888; font-size:0.9rem; }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+st.markdown(f'<div class="juiz-header">PAINEL DO JUIZ</div>', unsafe_allow_html=True)
+st.markdown(f'<div class="juiz-user">Logado como: {user["username"]}</div>', unsafe_allow_html=True)
 
-if st.sidebar.button("Sair"):
+if st.sidebar.button("Sair", use_container_width=True):
     del st.session_state["user"]
     st.rerun()
 
@@ -26,11 +40,12 @@ if st.sidebar.button("Sair"):
 regata = db.query(Regata).filter_by(ativa=True).first()
 
 if not regata:
-    st.warning("Nenhuma regata ativa no momento.")
+    st.warning("Nenhuma regata ativa no momento. Aguarde o admin ativar uma regata.")
     db.close()
     st.stop()
 
-st.subheader(f"Regata: {regata.nome}")
+st.markdown(f"**Regata:** {regata.nome}")
+st.divider()
 
 equipes = db.query(Equipe).order_by(Equipe.nome).all()
 questoes = db.query(Questao).filter_by(regata_id=regata.id).all()
@@ -45,17 +60,25 @@ if not questoes:
     db.close()
     st.stop()
 
-equipe_selecionada = st.selectbox(
-    "Equipe", equipes, format_func=lambda e: e.nome
-)
+# --- Selection ---
+col_eq, col_qt = st.columns(2, gap="large")
 
-questao_selecionada = st.selectbox(
-    "Questao",
-    questoes,
-    format_func=lambda q: f"{q.nivel.upper()} — {q.imagem_filename}",
-)
+with col_eq:
+    equipe_selecionada = st.selectbox(
+        "Equipe", equipes, format_func=lambda e: e.nome
+    )
 
-# Show current attempt status for this team+question
+niveis_display = {"facil": "🟢 Facil", "medio": "🟡 Medio", "dificil": "🔴 Dificil"}
+with col_qt:
+    questao_selecionada = st.selectbox(
+        "Questao",
+        questoes,
+        format_func=lambda q: f"{niveis_display.get(q.nivel, q.nivel)} — {q.imagem_filename}",
+    )
+
+st.divider()
+
+# --- Attempt status ---
 tentativas_anteriores = (
     db.query(Tentativa)
     .filter_by(equipe_id=equipe_selecionada.id, questao_id=questao_selecionada.id)
@@ -66,14 +89,62 @@ tentativas_anteriores = (
 ja_acertou = any(t.acertou for t in tentativas_anteriores)
 num_tentativas = len(tentativas_anteriores)
 
+# Status indicator
 if ja_acertou:
-    st.success(f"Equipe ja acertou esta questao! (Tentativa {next(t.numero for t in tentativas_anteriores if t.acertou)} — {next(t.pontos for t in tentativas_anteriores if t.acertou)} pontos)")
+    t_acerto = next(t for t in tentativas_anteriores if t.acertou)
+    st.markdown(
+        f"""
+        <div style="background:linear-gradient(135deg,#1b5e20,#2e7d32); border-radius:12px; padding:1.5rem;
+                    text-align:center; margin-bottom:1rem;">
+            <div style="font-family:'Bebas Neue',sans-serif; font-size:1.8rem; color:#a5d6a7;
+                        letter-spacing:2px;">JA ACERTOU!</div>
+            <div style="font-family:'Outfit',sans-serif; color:#e8f5e9; font-size:1rem; margin-top:4px;">
+                Tentativa {t_acerto.numero} — +{t_acerto.pontos} pontos</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 elif num_tentativas >= 3:
-    st.error("Equipe ja esgotou as 3 tentativas nesta questao.")
+    st.markdown(
+        """
+        <div style="background:linear-gradient(135deg,#b71c1c,#c62828); border-radius:12px; padding:1.5rem;
+                    text-align:center; margin-bottom:1rem;">
+            <div style="font-family:'Bebas Neue',sans-serif; font-size:1.8rem; color:#ef9a9a;
+                        letter-spacing:2px;">TENTATIVAS ESGOTADAS</div>
+            <div style="font-family:'Outfit',sans-serif; color:#ffcdd2; font-size:1rem; margin-top:4px;">
+                3/3 tentativas usadas — 0 pontos</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 else:
-    st.info(f"Tentativas usadas: {num_tentativas}/3 — Proxima: {num_tentativas + 1}a tentativa")
+    proxima = num_tentativas + 1
+    pontos_possiveis = {1: 100, 2: 80, 3: 50}
 
-    col1, col2 = st.columns(2)
+    # Attempt dots
+    dots = ""
+    for i in range(1, 4):
+        if i <= num_tentativas:
+            dots += '<span style="color:#ef5350; font-size:1.5rem; margin:0 4px;">●</span>'
+        elif i == proxima:
+            dots += '<span style="color:#ffd200; font-size:1.5rem; margin:0 4px;">●</span>'
+        else:
+            dots += '<span style="color:#555; font-size:1.5rem; margin:0 4px;">○</span>'
+
+    st.markdown(
+        f"""
+        <div style="background:linear-gradient(135deg,#1a1a2e,#16213e); border:1px solid #333;
+                    border-radius:12px; padding:1.5rem; text-align:center; margin-bottom:1rem;">
+            <div style="margin-bottom:8px;">{dots}</div>
+            <div style="font-family:'Outfit',sans-serif; color:#ccc; font-size:1rem;">
+                {proxima}a tentativa — vale <strong style="color:#ffd200;">{pontos_possiveis[proxima]} pontos</strong></div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # Action buttons
+    col1, col2 = st.columns(2, gap="large")
 
     with col1:
         if st.button("✅ ACERTOU", use_container_width=True, type="primary"):
@@ -84,7 +155,7 @@ else:
                 st.error(result["erro"])
             else:
                 st.success(
-                    f"**{equipe_selecionada.nome}** — {questao_selecionada.nivel.upper()} — "
+                    f"**{equipe_selecionada.nome}** — {niveis_display.get(questao_selecionada.nivel, '')} — "
                     f"{result['numero']}a tentativa — **+{result['pontos']} pontos!**"
                 )
                 st.balloons()
@@ -99,7 +170,7 @@ else:
             else:
                 restantes = 3 - result["numero"]
                 st.warning(
-                    f"**{equipe_selecionada.nome}** — {questao_selecionada.nivel.upper()} — "
+                    f"**{equipe_selecionada.nome}** — {niveis_display.get(questao_selecionada.nivel, '')} — "
                     f"Errou tentativa {result['numero']}. Restam {restantes} tentativa(s)."
                 )
 

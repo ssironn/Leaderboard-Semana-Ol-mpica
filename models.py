@@ -3,6 +3,7 @@ from sqlalchemy import (
     Column,
     Integer,
     String,
+    Text,
     Boolean,
     LargeBinary,
     DateTime,
@@ -51,6 +52,7 @@ class Questao(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     regata_id = Column(Integer, ForeignKey("regatas.id"), nullable=False)
     nivel = Column(String(10), nullable=False)  # "facil", "medio", "dificil"
+    enunciado = Column(Text, nullable=True, default="")
     imagem = Column(LargeBinary, nullable=False)
     imagem_filename = Column(String(255), nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
