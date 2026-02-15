@@ -73,7 +73,7 @@ with col_qt:
     questao_selecionada = st.selectbox(
         "Questao",
         questoes,
-        format_func=lambda q: f"{niveis_display.get(q.nivel, q.nivel)} — {q.imagem_filename}",
+        format_func=lambda q: f"{niveis_display.get(q.nivel, q.nivel)} — {q.imagem_filename or q.enunciado[:30] if q.enunciado else 'Sem titulo'}",
     )
 
 st.divider()

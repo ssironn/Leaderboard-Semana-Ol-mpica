@@ -194,15 +194,15 @@ with tab_questoes:
                 imagem = st.file_uploader("Imagem da Questao", type=["png", "jpg", "jpeg"])
                 submitted = st.form_submit_button("Adicionar Questao", use_container_width=True, type="primary")
                 if submitted:
-                    if not imagem:
-                        st.error("Selecione uma imagem.")
+                    if not enunciado or not enunciado.strip():
+                        st.error("Preencha o enunciado da questao.")
                     else:
                         questao = Questao(
                             regata_id=regata_selecionada.id,
                             nivel=nivel,
-                            enunciado=enunciado.strip() if enunciado else "",
-                            imagem=imagem.read(),
-                            imagem_filename=imagem.name,
+                            enunciado=enunciado.strip(),
+                            imagem=imagem.read() if imagem else None,
+                            imagem_filename=imagem.name if imagem else None,
                         )
                         db.add(questao)
                         db.commit()
@@ -228,10 +228,12 @@ with tab_questoes:
                 with st.container(border=True):
                     col1, col2, col3 = st.columns([1.5, 3, 0.5])
                     col1.markdown(f"**{nivel_label}**")
-                    col1.caption(q.imagem_filename)
+                    if q.imagem_filename:
+                        col1.caption(q.imagem_filename)
                     if q.enunciado:
                         col1.markdown(f"*{q.enunciado}*")
-                    col2.image(q.imagem, width=250)
+                    if q.imagem:
+                        col2.image(q.imagem, width=250)
                     if col3.button("🗑️", key=f"del_questao_{q.id}", help="Remover questao"):
                         db.delete(q)
                         db.commit()

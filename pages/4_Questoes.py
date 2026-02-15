@@ -81,6 +81,7 @@ else:
             """,
             unsafe_allow_html=True,
         )
-        st.image(q.imagem, use_container_width=True)
+        if q.imagem:
+            st.image(q.imagem, use_container_width=True)
 
 db.close()

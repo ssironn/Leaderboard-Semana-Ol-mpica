@@ -1,34 +1,8 @@
 import streamlit as st
-from sqlalchemy import inspect, text
-from database import engine, get_db, Base
-from models import User
-from auth import hash_password
+from database import init_db
 
-# Create all tables
-Base.metadata.create_all(bind=engine)
-
-# Migrate: add enunciado column if missing (for existing databases)
-inspector = inspect(engine)
-columns = [c["name"] for c in inspector.get_columns("questoes")]
-if "enunciado" not in columns:
-    with engine.connect() as conn:
-        conn.execute(text("ALTER TABLE questoes ADD COLUMN enunciado TEXT DEFAULT ''"))
-        conn.commit()
-
-# Create default admin if not exists
-db = get_db()
-try:
-    admin = db.query(User).filter_by(username="admin").first()
-    if not admin:
-        admin = User(
-            username="admin",
-            password_hash=hash_password("admin"),
-            role="admin",
-        )
-        db.add(admin)
-        db.commit()
-finally:
-    db.close()
+# Ensure DB is ready (tables + default admin)
+init_db()
 
 st.set_page_config(page_title="Batalha Olimpica", page_icon="🏅", layout="wide", initial_sidebar_state="collapsed")
 

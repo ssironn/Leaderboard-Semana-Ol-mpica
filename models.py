@@ -52,9 +52,9 @@ class Questao(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     regata_id = Column(Integer, ForeignKey("regatas.id"), nullable=False)
     nivel = Column(String(10), nullable=False)  # "facil", "medio", "dificil"
-    enunciado = Column(Text, nullable=True, default="")
-    imagem = Column(LargeBinary, nullable=False)
-    imagem_filename = Column(String(255), nullable=False)
+    enunciado = Column(Text, nullable=False)
+    imagem = Column(LargeBinary, nullable=True)
+    imagem_filename = Column(String(255), nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     regata = relationship("Regata", back_populates="questoes")
