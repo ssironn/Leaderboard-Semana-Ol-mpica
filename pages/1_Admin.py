@@ -3,7 +3,7 @@ from database import SessionLocal
 from models import User, Equipe, Regata, Questao
 from auth import login_form, require_auth, hash_password
 
-st.set_page_config(page_title="Admin - Batalha Olimpica", page_icon="⚙️", layout="wide")
+st.set_page_config(page_title="Admin - Batalha Olimpica", page_icon="⚙️", layout="wide", initial_sidebar_state="collapsed")
 
 db = SessionLocal()
 

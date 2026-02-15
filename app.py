@@ -21,7 +21,7 @@ try:
 finally:
     db.close()
 
-st.set_page_config(page_title="Batalha Olimpica", page_icon="🏅", layout="wide")
+st.set_page_config(page_title="Batalha Olimpica", page_icon="🏅", layout="wide", initial_sidebar_state="collapsed")
 
 st.title("Batalha Olimpica")
 st.markdown("Selecione uma pagina no menu lateral.")

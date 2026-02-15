@@ -51,13 +51,11 @@ def registrar_tentativa(
     }
 
 
-def calcular_leaderboard(db: Session, regata_id: int) -> list[dict]:
-    """Calculate leaderboard for a regata, sorted by total points descending."""
+def calcular_leaderboard(db: Session) -> list[dict]:
+    """Calculate global leaderboard across all regatas, sorted by total points descending."""
     results = (
         db.query(Equipe.nome, func.coalesce(func.sum(Tentativa.pontos), 0).label("pontos"))
         .outerjoin(Tentativa, Tentativa.equipe_id == Equipe.id)
-        .outerjoin(Questao, Tentativa.questao_id == Questao.id)
-        .filter(Questao.regata_id == regata_id)
         .group_by(Equipe.id)
         .order_by(func.sum(Tentativa.pontos).desc())
         .all()

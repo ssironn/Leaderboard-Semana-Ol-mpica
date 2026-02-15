@@ -116,7 +116,7 @@ def test_calcular_leaderboard(db):
     registrar_tentativa(db, equipe_b.id, questao.id, False, juiz.id)
     registrar_tentativa(db, equipe_b.id, questao.id, True, juiz.id)
 
-    ranking = calcular_leaderboard(db, regata.id)
+    ranking = calcular_leaderboard(db)
     assert len(ranking) == 2
     assert ranking[0]["equipe"] == "Equipe A"
     assert ranking[0]["pontos"] == 100

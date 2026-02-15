@@ -4,7 +4,7 @@ from models import User, Equipe, Regata, Questao, Tentativa
 from auth import login_form, require_auth
 from scoring import registrar_tentativa
 
-st.set_page_config(page_title="Juiz - Batalha Olimpica", page_icon="⚖️", layout="wide")
+st.set_page_config(page_title="Juiz - Batalha Olimpica", page_icon="⚖️", layout="wide", initial_sidebar_state="collapsed")
 
 db = SessionLocal()
 

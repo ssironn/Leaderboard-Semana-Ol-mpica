@@ -1,25 +1,16 @@
 import time
 import streamlit as st
 from database import SessionLocal
-from models import Regata, Equipe
+from models import Equipe
 from scoring import calcular_leaderboard
 
-st.set_page_config(page_title="Leaderboard - Batalha Olimpica", page_icon="🏆", layout="wide")
+st.set_page_config(page_title="Leaderboard - Batalha Olimpica", page_icon="🏆", layout="wide", initial_sidebar_state="collapsed")
 
 db = SessionLocal()
 
-regata = db.query(Regata).filter_by(ativa=True).first()
+st.title("🏆 Batalha Olimpica")
 
-if not regata:
-    st.title("Batalha Olimpica")
-    st.info("Nenhuma regata ativa no momento. Aguarde...")
-    db.close()
-    time.sleep(5)
-    st.rerun()
-
-st.title(f"🏆 {regata.nome}")
-
-ranking = calcular_leaderboard(db, regata.id)
+ranking = calcular_leaderboard(db)
 
 # Include teams with 0 points
 equipes_no_ranking = {r["equipe"] for r in ranking}
