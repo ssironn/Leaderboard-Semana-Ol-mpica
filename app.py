@@ -22,12 +22,10 @@ finally:
     db.close()
 
 st.set_page_config(page_title="Batalha Olimpica", page_icon="🏅", layout="wide", initial_sidebar_state="collapsed")
+st.markdown("<style>[data-testid='stSidebarNav'] {display: none;}</style>", unsafe_allow_html=True)
 
 st.title("Batalha Olimpica")
-st.markdown("Selecione uma pagina no menu lateral.")
 st.markdown("""
-- **Admin** — Gerenciar juizes, equipes, regatas e questoes
-- **Juiz** — Registrar tentativas das equipes
 - **Leaderboard** — Ranking em tempo real
 - **Questoes** — Questoes da regata ativa
 """)

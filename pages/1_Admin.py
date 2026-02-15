@@ -4,6 +4,7 @@ from models import User, Equipe, Regata, Questao
 from auth import login_form, require_auth, hash_password
 
 st.set_page_config(page_title="Admin - Batalha Olimpica", page_icon="⚙️", layout="wide", initial_sidebar_state="collapsed")
+st.markdown("<style>[data-testid='stSidebarNav'] {display: none;}</style>", unsafe_allow_html=True)
 
 db = SessionLocal()
 

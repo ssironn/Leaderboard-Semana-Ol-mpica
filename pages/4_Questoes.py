@@ -4,6 +4,7 @@ from database import SessionLocal
 from models import Regata, Questao
 
 st.set_page_config(page_title="Questoes - Batalha Olimpica", page_icon="📝", layout="wide", initial_sidebar_state="collapsed")
+st.markdown("<style>[data-testid='stSidebarNav'] {display: none;}</style>", unsafe_allow_html=True)
 
 db = SessionLocal()
 
