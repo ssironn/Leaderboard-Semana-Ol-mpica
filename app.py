@@ -18,20 +18,30 @@ st.markdown(
         <div style="font-family:'Outfit',sans-serif; color:#999; font-size:1.1rem; margin-top:0.5rem;
                     letter-spacing:2px; text-transform:uppercase;">Semana Olimpica 2026</div>
         <div style="margin-top:3rem; display:flex; justify-content:center; gap:2rem; flex-wrap:wrap;">
-            <div style="background:linear-gradient(145deg,#1a1a2e,#16213e); border:1px solid #333;
-                        border-radius:16px; padding:2rem 2.5rem; min-width:200px;">
-                <div style="font-family:'Bebas Neue',sans-serif; font-size:1.8rem; color:#ffd200;
-                            letter-spacing:2px;">LEADERBOARD</div>
-                <div style="font-family:'Outfit',sans-serif; color:#888; font-size:0.85rem; margin-top:4px;">
-                    Ranking em tempo real</div>
-            </div>
-            <div style="background:linear-gradient(145deg,#1a1a2e,#16213e); border:1px solid #333;
-                        border-radius:16px; padding:2rem 2.5rem; min-width:200px;">
-                <div style="font-family:'Bebas Neue',sans-serif; font-size:1.8rem; color:#ffd200;
-                            letter-spacing:2px;">QUESTOES</div>
-                <div style="font-family:'Outfit',sans-serif; color:#888; font-size:0.85rem; margin-top:4px;">
-                    Desafios da regata ativa</div>
-            </div>
+            <a href="/Leaderboard" style="text-decoration:none; cursor:pointer;">
+                <div style="background:linear-gradient(145deg,#1a1a2e,#16213e); border:1px solid #333;
+                            border-radius:16px; padding:2rem 2.5rem; min-width:200px;
+                            transition:border-color 0.2s, transform 0.2s;"
+                     onmouseover="this.style.borderColor='#ffd200'; this.style.transform='translateY(-4px)';"
+                     onmouseout="this.style.borderColor='#333'; this.style.transform='translateY(0)';">
+                    <div style="font-family:'Bebas Neue',sans-serif; font-size:1.8rem; color:#ffd200;
+                                letter-spacing:2px;">LEADERBOARD</div>
+                    <div style="font-family:'Outfit',sans-serif; color:#888; font-size:0.85rem; margin-top:4px;">
+                        Ranking em tempo real</div>
+                </div>
+            </a>
+            <a href="/Questoes" style="text-decoration:none; cursor:pointer;">
+                <div style="background:linear-gradient(145deg,#1a1a2e,#16213e); border:1px solid #333;
+                            border-radius:16px; padding:2rem 2.5rem; min-width:200px;
+                            transition:border-color 0.2s, transform 0.2s;"
+                     onmouseover="this.style.borderColor='#ffd200'; this.style.transform='translateY(-4px)';"
+                     onmouseout="this.style.borderColor='#333'; this.style.transform='translateY(0)';">
+                    <div style="font-family:'Bebas Neue',sans-serif; font-size:1.8rem; color:#ffd200;
+                                letter-spacing:2px;">QUESTOES</div>
+                    <div style="font-family:'Outfit',sans-serif; color:#888; font-size:0.85rem; margin-top:4px;">
+                        Desafios da regata ativa</div>
+                </div>
+            </a>
         </div>
     </div>
     """,

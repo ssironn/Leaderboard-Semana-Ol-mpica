@@ -190,7 +190,7 @@ with tab_questoes:
             with st.form(f"nova_questao_{st.session_state.form_questao}"):
                 nivel = st.selectbox("Nivel", ["facil", "medio", "dificil"],
                                      format_func=lambda n: niveis_display[n])
-                enunciado = st.text_area("Enunciado", placeholder="Ex: Resolva a equacao abaixo...")
+                enunciado = st.text_area("Enunciado", placeholder="Ex: Resolva $2x + 3 = 7$. Qual o valor de $x$?")
                 imagem = st.file_uploader("Imagem da Questao", type=["png", "jpg", "jpeg"])
                 submitted = st.form_submit_button("Adicionar Questao", use_container_width=True, type="primary")
                 if submitted:
@@ -226,17 +226,15 @@ with tab_questoes:
             for q in questoes_sorted:
                 nivel_label = niveis_display.get(q.nivel, q.nivel)
                 with st.container(border=True):
-                    col1, col2, col3 = st.columns([1.5, 3, 0.5])
-                    col1.markdown(f"**{nivel_label}**")
-                    if q.imagem_filename:
-                        col1.caption(q.imagem_filename)
-                    if q.enunciado:
-                        col1.markdown(f"*{q.enunciado}*")
-                    if q.imagem:
-                        col2.image(q.imagem, width=250)
-                    if col3.button("🗑️", key=f"del_questao_{q.id}", help="Remover questao"):
+                    header_col, del_col = st.columns([5, 0.5])
+                    header_col.markdown(f"**{nivel_label}**")
+                    if del_col.button("🗑️", key=f"del_questao_{q.id}", help="Remover questao"):
                         db.delete(q)
                         db.commit()
                         st.rerun()
+                    if q.enunciado:
+                        st.markdown(q.enunciado)
+                    if q.imagem:
+                        st.image(q.imagem, width=300)
 
 db.close()

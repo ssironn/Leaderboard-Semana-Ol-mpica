@@ -65,11 +65,6 @@ else:
         label = niveis_label.get(q.nivel, q.nivel)
         cor = niveis_cor_hex.get(q.nivel, "#888")
 
-        enunciado_html = ""
-        if q.enunciado:
-            enunciado_html = f"""<div style="font-family:'Outfit',sans-serif; color:#ccc; font-size:1.05rem;
-                                            margin-left:4px;">{q.enunciado}</div>"""
-
         st.markdown(
             f"""
             <div style="display:flex; align-items:center; gap:12px; margin:1.5rem 0 0.4rem;">
@@ -77,10 +72,11 @@ else:
                             font-size:1.2rem; letter-spacing:2px; padding:4px 16px; border-radius:6px;">
                     {label}</div>
             </div>
-            {enunciado_html}
             """,
             unsafe_allow_html=True,
         )
+        if q.enunciado:
+            st.markdown(q.enunciado)
         if q.imagem:
             st.image(q.imagem, use_container_width=True)
 
