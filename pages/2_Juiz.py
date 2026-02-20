@@ -2,7 +2,7 @@ import streamlit as st
 from database import get_db
 from models import User, Equipe, Regata, Questao, Tentativa
 from auth import login_form, require_auth
-from scoring import registrar_tentativa
+from scoring import registrar_tentativa, PONTOS_POR_TENTATIVA
 
 st.set_page_config(page_title="Juiz - Batalha Olimpica", page_icon="⚖️", layout="wide", initial_sidebar_state="collapsed")
 
@@ -173,5 +173,27 @@ else:
                     f"**{equipe_selecionada.nome}** — {niveis_display.get(questao_selecionada.nivel, '')} — "
                     f"Errou tentativa {result['numero']}. Restam {restantes} tentativa(s)."
                 )
+
+# --- Attempt history & correction ---
+if tentativas_anteriores:
+    st.divider()
+    st.markdown("#### Historico de tentativas")
+    for t in tentativas_anteriores:
+        with st.container(border=True):
+            status_icon = "✅" if t.acertou else "❌"
+            c1, c2 = st.columns([5, 1])
+            c1.markdown(
+                f"**Tentativa {t.numero}** — {status_icon} {'Acertou' if t.acertou else 'Errou'} — **{t.pontos} pts**"
+            )
+            can_correct = (t.juiz_id == user["id"]) or (user["role"] == "admin")
+            if can_correct:
+                if c2.button("Corrigir", key=f"corrigir_{t.id}"):
+                    t.acertou = not t.acertou
+                    if t.acertou:
+                        t.pontos = PONTOS_POR_TENTATIVA.get(t.numero, 0)
+                    else:
+                        t.pontos = 0
+                    db.commit()
+                    st.rerun()
 
 db.close()

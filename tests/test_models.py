@@ -41,6 +41,7 @@ def test_create_regata_with_questoes(db):
     questao = Questao(
         regata_id=regata.id,
         nivel="facil",
+        enunciado="Questao teste",
         imagem=b"fake_image_data",
         imagem_filename="q1.png",
     )
@@ -58,7 +59,7 @@ def test_create_tentativa(db):
     db.commit()
 
     questao = Questao(
-        regata_id=regata.id, nivel="medio", imagem=b"img", imagem_filename="q.png"
+        regata_id=regata.id, nivel="medio", enunciado="Questao teste", imagem=b"img", imagem_filename="q.png"
     )
     db.add(questao)
     db.commit()

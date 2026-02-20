@@ -54,27 +54,8 @@ questoes = db.query(Questao).filter_by(regata_id=regata.id).all()
 if not questoes:
     st.info("Nenhuma questao cadastrada para esta regata.")
 else:
-    niveis_ordem = {"facil": 0, "medio": 1, "dificil": 2}
-    niveis_label = {"facil": "FACIL", "medio": "MEDIO", "dificil": "DIFICIL"}
-    niveis_cor_hex = {"facil": "#4caf50", "medio": "#ff9800", "dificil": "#f44336"}
-    niveis_pontos = {"facil": "100", "medio": "100", "dificil": "100"}
-
-    questoes_sorted = sorted(questoes, key=lambda q: niveis_ordem.get(q.nivel, 99))
-
-    for q in questoes_sorted:
-        label = niveis_label.get(q.nivel, q.nivel)
-        cor = niveis_cor_hex.get(q.nivel, "#888")
-
-        st.markdown(
-            f"""
-            <div style="display:flex; align-items:center; gap:12px; margin:1.5rem 0 0.4rem;">
-                <div style="background:{cor}; color:#000; font-family:'Bebas Neue',sans-serif;
-                            font-size:1.2rem; letter-spacing:2px; padding:4px 16px; border-radius:6px;">
-                    {label}</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+    for q in questoes:
+        st.divider()
         if q.enunciado:
             st.markdown(q.enunciado)
         if q.imagem:

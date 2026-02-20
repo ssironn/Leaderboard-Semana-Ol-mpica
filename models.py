@@ -22,7 +22,6 @@ class User(Base):
     role = Column(String(10), nullable=False)  # "admin" or "juiz"
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
-    tentativas = relationship("Tentativa", back_populates="juiz")
 
 
 class Equipe(Base):
@@ -70,9 +69,8 @@ class Tentativa(Base):
     numero = Column(Integer, nullable=False)  # 1, 2, or 3
     acertou = Column(Boolean, nullable=False)
     pontos = Column(Integer, nullable=False, default=0)
-    juiz_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    juiz_id = Column(Integer, nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     equipe = relationship("Equipe", back_populates="tentativas")
     questao = relationship("Questao", back_populates="tentativas")
-    juiz = relationship("User", back_populates="tentativas")

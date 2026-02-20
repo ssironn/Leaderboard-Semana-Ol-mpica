@@ -37,6 +37,32 @@ def init_db():
             conn.execute(text("ALTER TABLE questoes ADD COLUMN enunciado TEXT DEFAULT ''"))
             conn.commit()
 
+    # Migrate: remove FK constraint on juiz_id in tentativas (for existing databases)
+    if "tentativas" in inspector.get_table_names():
+        fks = inspector.get_foreign_keys("tentativas")
+        has_juiz_fk = any(
+            fk.get("referred_table") == "users" for fk in fks
+        )
+        if has_juiz_fk:
+            with engine.connect() as conn:
+                conn.execute(text(
+                    "CREATE TABLE tentativas_new ("
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    "equipe_id INTEGER NOT NULL REFERENCES equipes(id), "
+                    "questao_id INTEGER NOT NULL REFERENCES questoes(id), "
+                    "numero INTEGER NOT NULL, "
+                    "acertou BOOLEAN NOT NULL, "
+                    "pontos INTEGER NOT NULL DEFAULT 0, "
+                    "juiz_id INTEGER NOT NULL, "
+                    "created_at DATETIME)"
+                ))
+                conn.execute(text(
+                    "INSERT INTO tentativas_new SELECT * FROM tentativas"
+                ))
+                conn.execute(text("DROP TABLE tentativas"))
+                conn.execute(text("ALTER TABLE tentativas_new RENAME TO tentativas"))
+                conn.commit()
+
     # Create default admin if not exists
     db = SessionLocal()
     try:

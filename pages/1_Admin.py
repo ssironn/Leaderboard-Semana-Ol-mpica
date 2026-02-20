@@ -75,12 +75,29 @@ with tab_juizes:
             st.caption("Nenhum juiz cadastrado ainda.")
         for j in juizes:
             with st.container(border=True):
-                col1, col2 = st.columns([4, 1])
+                col1, col2, col3 = st.columns([4, 1, 1])
                 col1.markdown(f"**{j.username}**")
-                if col2.button("🗑️", key=f"del_juiz_{j.id}", help="Remover juiz"):
+                if col2.button("🔑", key=f"edit_senha_{j.id}", help="Alterar senha"):
+                    st.session_state[f"editing_senha_{j.id}"] = True
+                if col3.button("🗑️", key=f"del_juiz_{j.id}", help="Remover juiz"):
                     db.delete(j)
                     db.commit()
                     st.rerun()
+                if st.session_state.get(f"editing_senha_{j.id}"):
+                    nova_senha = st.text_input("Nova senha", type="password", key=f"nova_senha_{j.id}")
+                    c1, c2 = st.columns(2)
+                    if c1.button("Confirmar", key=f"confirm_senha_{j.id}", type="primary"):
+                        if nova_senha:
+                            j.password_hash = hash_password(nova_senha)
+                            db.commit()
+                            st.success(f"Senha de **{j.username}** alterada!")
+                            del st.session_state[f"editing_senha_{j.id}"]
+                            st.rerun()
+                        else:
+                            st.error("Digite a nova senha.")
+                    if c2.button("Cancelar", key=f"cancel_senha_{j.id}"):
+                        del st.session_state[f"editing_senha_{j.id}"]
+                        st.rerun()
 
 # --- EQUIPES ---
 with tab_equipes:
@@ -145,7 +162,7 @@ with tab_regatas:
             st.caption("Nenhuma regata cadastrada ainda.")
         for r in regatas:
             with st.container(border=True):
-                col1, col2, col3 = st.columns([4, 1, 1])
+                col1, col2, col3, col4 = st.columns([4, 1, 1, 1])
                 if r.ativa:
                     col1.markdown(f"**{r.nome}** &nbsp; 🟢 **ATIVA**")
                 else:
@@ -164,10 +181,27 @@ with tab_regatas:
                         db.commit()
                         st.rerun()
 
-                if col3.button("🗑️", key=f"del_regata_{r.id}", help="Remover regata"):
+                if col3.button("✏️", key=f"edit_regata_{r.id}", help="Editar regata"):
+                    st.session_state[f"editing_regata_{r.id}"] = True
+                if col4.button("🗑️", key=f"del_regata_{r.id}", help="Remover regata"):
                     db.delete(r)
                     db.commit()
                     st.rerun()
+                if st.session_state.get(f"editing_regata_{r.id}"):
+                    novo_nome = st.text_input("Nome da regata", value=r.nome, key=f"novo_nome_regata_{r.id}")
+                    c1, c2 = st.columns(2)
+                    if c1.button("Salvar", key=f"save_regata_{r.id}", type="primary"):
+                        if novo_nome and novo_nome.strip():
+                            r.nome = novo_nome.strip()
+                            db.commit()
+                            st.success(f"Regata renomeada para **{r.nome}**!")
+                            del st.session_state[f"editing_regata_{r.id}"]
+                            st.rerun()
+                        else:
+                            st.error("Digite o nome da regata.")
+                    if c2.button("Cancelar", key=f"cancel_regata_{r.id}"):
+                        del st.session_state[f"editing_regata_{r.id}"]
+                        st.rerun()
 
 # --- QUESTOES ---
 with tab_questoes:
@@ -226,15 +260,38 @@ with tab_questoes:
             for q in questoes_sorted:
                 nivel_label = niveis_display.get(q.nivel, q.nivel)
                 with st.container(border=True):
-                    header_col, del_col = st.columns([5, 0.5])
+                    header_col, edit_col, del_col = st.columns([5, 0.5, 0.5])
                     header_col.markdown(f"**{nivel_label}**")
+                    if edit_col.button("✏️", key=f"edit_questao_{q.id}", help="Editar questao"):
+                        st.session_state[f"editing_questao_{q.id}"] = True
                     if del_col.button("🗑️", key=f"del_questao_{q.id}", help="Remover questao"):
                         db.delete(q)
                         db.commit()
                         st.rerun()
-                    if q.enunciado:
-                        st.markdown(q.enunciado)
-                    if q.imagem:
-                        st.image(q.imagem, width=300)
+                    if st.session_state.get(f"editing_questao_{q.id}"):
+                        niveis_keys = ["facil", "medio", "dificil"]
+                        novo_nivel = st.selectbox(
+                            "Nivel", niveis_keys,
+                            index=niveis_keys.index(q.nivel) if q.nivel in niveis_keys else 0,
+                            format_func=lambda n: niveis_display[n],
+                            key=f"novo_nivel_{q.id}",
+                        )
+                        novo_enunciado = st.text_area("Enunciado", value=q.enunciado or "", key=f"novo_enunciado_{q.id}")
+                        c1, c2 = st.columns(2)
+                        if c1.button("Salvar", key=f"save_questao_{q.id}", type="primary"):
+                            q.nivel = novo_nivel
+                            q.enunciado = novo_enunciado.strip()
+                            db.commit()
+                            st.success("Questao atualizada!")
+                            del st.session_state[f"editing_questao_{q.id}"]
+                            st.rerun()
+                        if c2.button("Cancelar", key=f"cancel_questao_{q.id}"):
+                            del st.session_state[f"editing_questao_{q.id}"]
+                            st.rerun()
+                    else:
+                        if q.enunciado:
+                            st.markdown(q.enunciado)
+                        if q.imagem:
+                            st.image(q.imagem, width=300)
 
 db.close()

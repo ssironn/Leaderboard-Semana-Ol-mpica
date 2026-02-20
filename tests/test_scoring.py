@@ -22,7 +22,7 @@ def db():
     session.commit()
 
     questao = Questao(
-        regata_id=regata.id, nivel="facil", imagem=b"img", imagem_filename="q.png"
+        regata_id=regata.id, nivel="facil", enunciado="Questao teste", imagem=b"img", imagem_filename="q.png"
     )
     session.add(questao)
     session.commit()
